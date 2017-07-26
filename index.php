@@ -1,4 +1,5 @@
 <?php
+use Application\App;
 
 // Добавить автозагрузчик
 $loader = require (__DIR__ . '/vendor/autoload.php');
