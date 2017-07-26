@@ -8,8 +8,11 @@ class App
 	private $home_controller_name;
 	
 	// Конструктор, $home_controller_name - имя контроллера главной страницы
-	public function __construct(string $home_controller_name = 'Home')
+	public function __construct($home_controller_name = 'Home')
 	{
+		if (!isset($home_controller_name)) {
+			$home_controller_name = 'Home';
+		}
 		// Получить имя класса главной страницы с учетом пространства имен
 		$controller_name = 'Application\\Controllers\\'.$home_controller_name;
 		// Если класс объявлен
@@ -64,8 +67,8 @@ class App
 			
 			// Если выбранный метод определен у контроллера
 			if (method_exists($controller, $method_name)) {
-				// Выполняем его
-				$controller->$method_name();
+				// Выполняем его с передачей массива параметров запроса
+				$controller->$method_name($_REQUEST);
 			} else {
 				// Иначе выводим сообщение о не найденном методе
 				echo "Метод $method_name контроллера $controller_name не определен";
