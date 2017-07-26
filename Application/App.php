@@ -4,14 +4,20 @@ namespace Application;
 // Приложение
 class App
 {
+	// Имя контроллера домашней страницы
 	private $home_controller_name;
 	
+	// Конструктор, $home_controller_name - имя контроллера главной страницы
 	public function __construct(string $home_controller_name = 'Home')
 	{
+		// Получить имя класса главной страницы с учетом пространства имен
 		$controller_name = 'Application\\Controllers\\'.$home_controller_name;
+		// Если класс объявлен
 		if (class_exists($controller_name)) {
+			// Присвоить свойству home_controller_name имя этого класса
 			$this->home_controller_name = $controller_name;
 		} else {
+			// Иначе генерировать исключение
 			throw new \Exception("Контроллер главной страницы с именем '$home_controller_name' не найден");
 		}
 	}
