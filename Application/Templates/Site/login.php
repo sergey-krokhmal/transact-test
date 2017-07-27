@@ -1,8 +1,9 @@
-<h2>Вход в аккаунт</h2>
-<?if ($error_message ?? '' !== ''):?>
-	<span color="red"><?=$error_message?></span>
-<?endif?>
-<form method="POST" action="/Site/login">
+<h1>Управление счетом</h1>
+<h2>Авторизация</h2>
+<?php if ($error_message ?? '' !== ''): ?>
+    <span style="color:red"><?=$error_message?></span>
+<?php endif ?>
+<form method="POST">
 	<label>Логин</label>
 	<input name="login" value="<?=$login ?? ''?>"></input>
 	<label>Пароль</label>

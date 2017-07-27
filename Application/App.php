@@ -28,17 +28,12 @@ class App
     // Запуск приложения
     public function run()
     {
-		// Если сессия не создана - создать ее
-		if (session_status() === PHP_SESSION_NONE) {
-			session_start();
-		}
-		
 		// Получаем Url без параметров запроса
         $url_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
 		// Определяем для запросов шаблон вида /Имя_контроллера/Имя_метода
 		// Имя метода может отсутствовать (подразумевается index)
-        $api_spec = '~^/(?<controller>[a-zA-Z0-9_]+)(?:/(?<method>[a-zA-Z0-9_]+))?/?.*$~';
+        $api_spec = '~^/(?<controller>[a-zA-Z0-9_]+)(?:/(?<method>[a-zA-Z0-9_]+))?/?$~';
 		// Получить массив совпадений запроса с шаблоном
         preg_match($api_spec, $url_path, $matches);
         
@@ -67,8 +62,16 @@ class App
 			
 			// Если выбранный метод определен у контроллера
 			if (method_exists($controller, $method_name)) {
-				// Выполняем его с передачей массива параметров запроса
+                // Если сессия не создана - создать ее
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+				// Выполняем метод с передачей массива параметров запроса
 				$controller->$method_name($_REQUEST);
+                
+                // Закрыть сессию не ожидая завершения скрипта
+                session_write_close();
+                
 			} else {
 				// Иначе выводим сообщение о не найденном методе
 				echo "Метод $method_name контроллера $controller_name не определен";
@@ -78,8 +81,5 @@ class App
 			// Иначе выводим сообщение о не найденном классе
 			echo "Класс контроллера $controller_name не найден";
 		}
-		
-		// Закрыть сессию не ожидая завершения скрипта
-		session_write_close();
     }
 }
