@@ -1,0 +1,11 @@
+{
+    "name": "krokhmal/transact-test",
+    "description": "Test app of transaction managment",
+    "minimum-stability": "dev",
+    "require": {},
+	"autoload": {
+		"psr-4": {
+			"Application\\": "Application/"
+		}
+	}
+}
