@@ -16,7 +16,7 @@ class AccountDb
 		$this->db = new \PDO('mysql:host=localhost;dbname=bit_money', 'test', 's78A5oTjhBZyeTQi', array(
 			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 			\PDO::ATTR_EMULATE_PREPARES => false,
-			\PDO::ATTR_TIMEOUT => 
+			\PDO::ATTR_TIMEOUT => 1200,
 			\PDO::ATTR_PERSISTENT => true
 		));
 	}
