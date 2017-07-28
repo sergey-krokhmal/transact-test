@@ -21,17 +21,17 @@
     <div>
         <fieldset>
             <legend>История транзакций</legend>
-            <table width="100%">
+            <table width="50%">
                 <tr>
                     <th align="left">Дата/Время</th>
                     <th align="left">Действие</th>
-                    <th align="left">Сумма</th>
+                    <th align="right">Сумма</th>
                 </tr>
                 <?php foreach ($transactions as $transaction): ?>
                     <tr>
                         <td><?= $transaction['datetime'] ?></td>
                         <td><?= $transaction['action'] ?></td>
-                        <td><?= $transaction['f_sum'] ?></td>
+                        <td align="right"><?= $transaction['f_sum'] ?></td>
                     </tr>
                 <?php endforeach ?>
             </table>
