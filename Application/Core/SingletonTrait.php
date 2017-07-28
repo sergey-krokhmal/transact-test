@@ -1,14 +1,14 @@
 <?php
 namespace Application\Core;
 
-// Базовый синглтон 
-class BaseSingleton
+// Трейт синглтон 
+trait SingletonTrait
 {
 	protected static $instance;	// Ссылка на объект
 	
-	public static function getInstance()
+	public static function getInstance(...$argument)
 	{
-		static::$instance = static::$instance ?? new static();
+		static::$instance = static::$instance ?? new static(...$argument);
 		return static::$instance;
 	}
 	
@@ -25,5 +25,11 @@ class BaseSingleton
 	// Запрет десериализации объекта
 	private function __wakeup()
 	{
+	}
+	
+	// Сбросить ссылку на объект
+	public static function reset()
+	{
+		static::$instance = NULL;
 	}
 }

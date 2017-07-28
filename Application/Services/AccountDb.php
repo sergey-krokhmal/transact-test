@@ -1,11 +1,13 @@
 <?php
 namespace Application\Services;
 
-use Application\Core\BaseSingleton;
+use Application\Core\SingletonTrait;
 
 // Сервис доступа к аккаунтам БД 
-class AccountDb extends BaseSingleton
+class AccountDb
 {
+	use SingletonTrait;
+	
 	private $db;	// Подключение к БД
 	
 	protected function __construct()
@@ -14,6 +16,7 @@ class AccountDb extends BaseSingleton
 		$this->db = new \PDO('mysql:host=localhost;dbname=bit_money', 'test', 's78A5oTjhBZyeTQi', array(
 			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 			\PDO::ATTR_EMULATE_PREPARES => false,
+			\PDO::ATTR_TIMEOUT => 
 			\PDO::ATTR_PERSISTENT => true
 		));
 	}

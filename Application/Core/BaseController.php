@@ -5,12 +5,12 @@ namespace Application\Core;
 class BaseController
 {
 	// Метод страницы по умолчанию
-	public function index()
+	public function index($params)
 	{
 	}
 	
 	// Подключение шаблона с данными страницы
-	public function loadTemplate(string $dir_name = 'Home', string $template_name = 'index', $data = array())
+	public function loadTemplate(string $dir_name = 'Home', string $template_name = 'index', $data = [])
 	{
 		// Корень сайта
 		$doc_root = $_SERVER['DOCUMENT_ROOT'];
@@ -18,7 +18,7 @@ class BaseController
 		$template_path_name = "$doc_root/Application/Templates/$dir_name/$template_name.php";
 		
 		// Преобразовать массив переданых данных в переменные
-		foreach ($data as $key => $val) {
+		foreach ($data ?? [] as $key => $val) {
 			$$key = $val;
 		}
 		
