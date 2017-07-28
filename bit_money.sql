@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Июл 27 2017 г., 05:31
+-- Время создания: Июл 28 2017 г., 05:17
 -- Версия сервера: 5.7.13
 -- Версия PHP: 7.0.8
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `account` (
 --
 
 INSERT INTO `account` (`id`, `fio`, `login`, `password`, `balance`) VALUES
-(1, 'Сергей Крохмаль', 'sergey', 0xe1ec7b29541f6c0db5b452b6de5fe1c5, '175399.00');
+(1, 'Сергей Крохмаль', 'sergey', 0xe1ec7b29541f6c0db5b452b6de5fe1c5, '175389.00');
 
 -- --------------------------------------------------------
 
@@ -52,20 +52,21 @@ CREATE TABLE IF NOT EXISTS `transaction` (
   `id_account` int(10) unsigned NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `sum` decimal(13,2) NOT NULL,
-  `action` enum('Списание','Начисление') NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+  `action` enum('withdraw','refill') NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `transaction`
 --
 
 INSERT INTO `transaction` (`id`, `id_account`, `time`, `sum`, `action`) VALUES
-(1, 1, '2017-07-27 04:03:37', '10.00', 'Списание'),
-(2, 1, '2017-07-27 04:05:42', '0.01', 'Списание'),
-(3, 1, '2017-07-27 04:48:12', '9.99', 'Списание'),
-(4, 1, '2017-07-27 04:49:55', '90.50', 'Списание'),
-(5, 1, '2017-07-27 04:50:02', '0.50', 'Списание'),
-(6, 1, '2017-07-27 05:26:29', '5000.00', 'Списание');
+(1, 1, '2017-07-27 04:03:37', '10.00', 'withdraw'),
+(2, 1, '2017-07-27 04:05:42', '0.01', 'withdraw'),
+(3, 1, '2017-07-27 04:48:12', '9.99', 'withdraw'),
+(4, 1, '2017-07-27 04:49:55', '90.50', 'withdraw'),
+(5, 1, '2017-07-27 04:50:02', '0.50', 'withdraw'),
+(6, 1, '2017-07-27 05:26:29', '5000.00', 'withdraw'),
+(7, 1, '2017-07-28 05:08:24', '10.00', 'withdraw');
 
 --
 -- Индексы сохранённых таблиц
@@ -96,7 +97,7 @@ ALTER TABLE `account`
 -- AUTO_INCREMENT для таблицы `transaction`
 --
 ALTER TABLE `transaction`
-  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
