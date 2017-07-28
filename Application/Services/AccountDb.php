@@ -1,19 +1,25 @@
 <?php
 namespace Application\Services;
 
+use Application\Core\SingletonTrait;
+
 // Сервис доступа к аккаунтам БД 
 class AccountDb
 {
-    private $db;	// Подключение к БД
+    use SingletonTrait;
     
-    public function __construct()
-	{
+    private $db;    // Подключение к БД
+    
+    protected function __construct()
+    {
         // Создание подключения к БД для сервиса
-		$this->db = new \PDO('mysql:host=localhost;dbname=bit_money', 'test', 's78A5oTjhBZyeTQi', array(
+        $this->db = new \PDO('mysql:host=localhost;dbname=bit_money', 'test', 's78A5oTjhBZyeTQi', array(
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_EMULATE_PREPARES => false
+            \PDO::ATTR_EMULATE_PREPARES => false,
+            \PDO::ATTR_TIMEOUT => 1200,
+            \PDO::ATTR_PERSISTENT => true
         ));
-	}
+    }
     
     // Выборка аккаунта по id
     public function getAccountById(int $id)
@@ -22,6 +28,7 @@ class AccountDb
         if ($query->execute(array($id))) {
             if ($query->rowCount() > 0) {
                 $account = $query->fetch();
+                $query->closeCursor();
                 return $account;
             } else {
                 return false;
@@ -38,6 +45,7 @@ class AccountDb
         if ($query->execute(array($login))) {
             if ($query->rowCount() > 0) {
                 $account = $query->fetch();
+                $query->closeCursor();
                 return $account;
             } else {
                 return false;
@@ -54,6 +62,7 @@ class AccountDb
         if ($query->execute(array($password, $id))) {
             if ($query->rowCount() > 0) {
                 $account = $query->fetch();
+                $query->closeCursor();
                 return $account;
             } else {
                 return false;
@@ -66,10 +75,11 @@ class AccountDb
     // Выборка транзакций по id аккаунта
     public function getTransactionsByIdAccount(int $id_account)
     {
-        $query = $this->db->prepare("SELECT * FROM `transaction` WHERE id_account = ? ORDER BY time DESC");
+        $query = $this->db->prepare("SELECT *, DATE_FORMAT(time, '%m.%d.%Y %H:%i:%s') as datetime FROM `transaction` WHERE id_account = ? ORDER BY time DESC");
         if ($query->execute(array($id_account))) {
             if ($query->rowCount() > 0) {
                 $transactions = $query->fetchAll();
+                $query->closeCursor();
                 return $transactions;
             } else {
                 return false;
@@ -87,6 +97,20 @@ class AccountDb
         
         // Попытка выполнения блока запросов
         try {
+            
+            if ($account = $this->getAccountById($id)) {
+                // Проверка суммы списания на ошибки
+                if (!is_numeric($sum)) {
+                    throw new \Exception("Для вывода средств нужно указать число");
+                } elseif ($sum < 0.01) {
+                    throw new \Exception("Сумма вывода должна быть больше или равной 0.01");
+                } elseif ($sum > $this->getAccountById($id)['balance']) {
+                    throw new \Exception("Не достаточно средств для вывода ".number_format($sum, 2, ',', ' '));
+                }
+            } else {
+                throw new \Exception("Аккаунта с id = $id нет");
+            }
+            
             // Обновить баланс аккаунта
             $query = $this->db->prepare("UPDATE `account` SET balance = balance - ? WHERE id = ?");
             $query->execute(array($sum, $id));
@@ -97,6 +121,7 @@ class AccountDb
             
             // Если ошибок небыло, то подтвердить сапросы
             $this->db->commit();
+            $query->closeCursor();
             return true;
         } catch(\Exception $ex) {
             // Если возникло исключения
