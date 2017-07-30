@@ -3,16 +3,30 @@ namespace Application\Services;
 
 use Application\Core\SingletonTrait;
 
-// Сущность управления аккаунтом
+/**
+ * Сервис управления аккаунтом
+ * Использует трейт синглона SingletonTrait
+ * @see SingletonTrait
+ * @package Application
+ * @subpackage Services
+ */
 class AccountManager
 {
     use SingletonTrait;
     
-    private $iv = "dGVzdHZlY3RvcgAt";       // Вектор шифрования
-    private $method = "AES-256-CBC";        // Метод шифрования
-    private $opt = OPENSSL_ALGO_SHA512;     // Алгоритм
+    /** @var string $iv Вектор шифрования */
+    private $iv = "dGVzdHZlY3RvcgAt";
+    /** @var string $method Метод шифрования */
+    private $method = "AES-256-CBC";
+    /** @var int $opt Алгоритм шифрования */
+    private $opt = OPENSSL_ALGO_SHA512;
     
-    // Авторизация
+    /**
+     * Авторизация в приложении
+     * @param string $login Логин
+     * @param string $password Пароль
+     * @return string|true Сообщение об ошибке
+     */
     public function login(string $login, string $password)
     {
         // Получение сервиса БД для доступа к аккаунтам
@@ -47,7 +61,10 @@ class AccountManager
         return true;
     }
     
-    // Авторизирован ли пользователь
+    /**
+     * Проверка авторизирован ли пользователь
+     * @return bool true - авторизирован, false - не авторизирован
+     */
     public function isLogged()
     {
         $logged = false;
@@ -60,14 +77,19 @@ class AccountManager
         return $logged;
     }
     
-    // Выход
+    /**
+     * Выход из аккаунта
+     */
     public function logout()
     {
         // Стереть данные аавторизации из сессии
         unset($_SESSION['auth']);
     }
     
-    // Получить аккаунт текущего пользователя
+    /**
+     * Получить аккаунт текущего пользователя
+     * @return array|false Массив записи данных аккаунта
+     */
     public function getAccount()
     {
         // Получение сервиса БД для доступа к аккаунтам
@@ -81,7 +103,11 @@ class AccountManager
         }
     }
     
-    // Получение транзакций аккаунта
+    /**
+     * Получение транзакций аккаунта
+     * @param mixed $id_account Id аккаунта
+     * @return array|false Массив записей данных транзакций
+     */
     public function getTransactions($id_account = false)
     {
         // Получение сервиса БД для доступа к аккаунтам
@@ -95,7 +121,11 @@ class AccountManager
         return $account_db->getTransactionsByIdAccount($id_account);
     }
     
-    // Вывод средств
+    /**
+     * Вывод средств
+     * @param float $sum Сумма списания
+     * @return string|true Сообщение об ошибке
+     */
     public function withdraw($sum = 0)
     {
         // Получение сервиса БД для доступа к аккаунтам
