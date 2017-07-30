@@ -1,13 +1,20 @@
 <?php
 namespace Application;
 
-// Приложение
+/**
+ * Класс приложения
+ * @package Application
+ */
 class App
 {
-    // Имя контроллера домашней страницы
+    /** @var string $home_controller_name имя контроллера домашней страницы */
     private $home_controller_name;
     
-    // Конструктор, $home_controller_name - имя контроллера главной страницы
+    /**
+     * Конструктор класса приложения, устанавливающий имя контроллера главной страницы
+     * @param string $home_controller_name Имя контроллера главной страницы
+     * @throws Exception Если контроллер с указанным именем не найден
+     */
     public function __construct($home_controller_name = 'Home')
     {
         if (!isset($home_controller_name)) {
@@ -25,7 +32,11 @@ class App
         }
     }
     
-    // Запуск приложения
+    /**
+     * Выполнить HTTP запрос к приложению
+     * По строке запроса определяется класс контроллера и его метод,
+     * затем создается экземпляр контроллера и выполняется его метод с параметрами
+     */
     public function run()
     {
         // Получаем Url без параметров запроса
@@ -65,9 +76,9 @@ class App
                 // Если сессия не создана - создать ее
                 if (session_status() === PHP_SESSION_NONE) {
                     session_start();
+                    session_write_close();
                 }
                 // Закрыть сессию не ожидая завершения скрипта
-                session_write_close();
                 // Выполняем метод с передачей массива параметров запроса
                 $controller->$method_name($_REQUEST);
                 

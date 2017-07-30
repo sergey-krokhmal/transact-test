@@ -29,7 +29,7 @@
                 </tr>
                 <?php foreach ($transactions as $transaction): ?>
                     <tr>
-                        <td><?= $transaction['datetime'] ?></td>
+                        <td><?= $common_utils->defaultFormatDate($transaction['time']) ?></td>
                         <td><?= $transaction['action'] ?></td>
                         <td align="right"><?= $transaction['f_sum'] ?></td>
                     </tr>

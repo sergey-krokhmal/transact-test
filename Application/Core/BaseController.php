@@ -1,15 +1,26 @@
 <?php
 namespace Application\Core;
 
-// Базовый контроллер приложения
+/**
+ * Базовый контроллер приложения
+ * @package Application
+ * @subpackage Core
+ */
 class BaseController
 {
-    // Метод страницы по умолчанию
+    /**
+     * Метод страницы index по умолчанию
+     * @param array $params Параметры запроса
+    */
     public function index($params)
     {
     }
     
-    // Подключение шаблона с данными страницы
+    /** Подключение шаблона с данными страницы
+     * @param string $dir_name Каталог с файлами шоблонов php
+     * @param string $template_name Имя файла шаблона php
+     * @param array $data Массив переменных, передаваемых в шаблон
+     */
     public function loadTemplate(string $dir_name = 'Home', string $template_name = 'index', $data = [])
     {
         // Корень сайта

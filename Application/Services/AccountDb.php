@@ -3,13 +3,21 @@ namespace Application\Services;
 
 use Application\Core\SingletonTrait;
 
-// Сервис доступа к аккаунтам БД 
+/**
+ * Сервис доступа к аккаунтам БД
+ * Использует трейт синглона SingletonTrait
+ * @see SingletonTrait
+ * @package Application
+ * @subpackage Services
+ */
 class AccountDb
 {
     use SingletonTrait;
     
-    private $db;    // Подключение к БД
+    /** @var object $db Подключение к БД */
+    private $db;
     
+    /** Конструктор создающий подключение к БД*/
     protected function __construct()
     {
         // Создание подключения к БД для сервиса
@@ -17,11 +25,14 @@ class AccountDb
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
             \PDO::ATTR_EMULATE_PREPARES => false,
             \PDO::ATTR_TIMEOUT => 1200,
-            \PDO::ATTR_PERSISTENT => true
         ));
     }
     
-    // Выборка аккаунта по id
+    /**
+     * Выборка аккаунта по id из БД
+     * @param int $id Id аккаунта
+     * @return array|false Массив данных записи аккаунта
+     */
     public function getAccountById(int $id)
     {
         $query = $this->db->prepare("SELECT * FROM `account` WHERE id = ?");
@@ -38,7 +49,11 @@ class AccountDb
         }
     }
     
-    // Выборка аккаунта по логину
+    /**
+     * Выборка аккаунта по логину из БД
+     * @param string $login Логин
+     * @return array|false Массив данных записи аккаунта
+     */
     public function getAccountByLogin(string $login)
     {
         $query = $this->db->prepare("SELECT * FROM `account` WHERE login = ?");
@@ -56,6 +71,12 @@ class AccountDb
     }
     
     // Выборка аккаунта по id и паролю
+    /**
+     * Выборка аккаунта по id и паролю из БД
+     * @param int $id Id аккаунта
+     * @param string $password Палоль
+     * @return array|false Массив данных записи аккаунта
+     */
     public function getAccountByIdAndPass(int $id, string $password)
     {
         $query = $this->db->prepare("SELECT * FROM `account` WHERE password = ? AND id = ?");
@@ -73,9 +94,14 @@ class AccountDb
     }
     
     // Выборка транзакций по id аккаунта
+    /**
+     * Выборка транзакций по id аккаунта из БД
+     * @param int $id_account Id аккаунта
+     * @return array|false Массив строк данных транзаций аккаунта
+     */
     public function getTransactionsByIdAccount(int $id_account)
     {
-        $query = $this->db->prepare("SELECT *, DATE_FORMAT(time, '%m.%d.%Y %H:%i:%s') as datetime FROM `transaction` WHERE id_account = ? ORDER BY time DESC");
+        $query = $this->db->prepare("SELECT * FROM `transaction` WHERE id_account = ? ORDER BY time DESC");
         if ($query->execute(array($id_account))) {
             if ($query->rowCount() > 0) {
                 $transactions = $query->fetchAll();
@@ -89,15 +115,20 @@ class AccountDb
         }
     }
     
-    // Вывод средств
+    /**
+     * Вывод средств
+     * Уменьшение баланса на сумму списания и вставка соответствующей транзакции
+     * @param int $id Id аккаунта
+     * @param int $sum Сумма списания
+     * @return string|true Сообщение об ошибке
+     */
     public function withdraw(int $id, $sum)
     {
         // Начало транзакции
-        $this->db->beginTransaction();
+        $t = $this->db->beginTransaction();
         
         // Попытка выполнения блока запросов
         try {
-            
             if ($account = $this->getAccountById($id)) {
                 // Проверка суммы списания на ошибки
                 if (!is_numeric($sum)) {
@@ -110,10 +141,13 @@ class AccountDb
             } else {
                 throw new \Exception("Аккаунта с id = $id нет");
             }
-            
             // Обновить баланс аккаунта
             $query = $this->db->prepare("UPDATE `account` SET balance = balance - ? WHERE id = ?");
             $query->execute(array($sum, $id));
+            
+            if ($this->getAccountById($id)['balance'] < 0) {
+                throw new \Exception("Не достаточно средств для вывода ".number_format($sum, 2, ',', ' '));
+            }
             
             // Добавить транзакцию в историю
             $query = $this->db->prepare("INSERT INTO `transaction` SET id_account = ?, sum = ?, action = 1");
